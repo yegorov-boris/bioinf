@@ -13,10 +13,39 @@ func main() {
 	text := scanner.Text()
 
 	ab := strings.Split(text, " ")
+	if len(ab) == 1 {
+		ab = append(ab, "")
+	}
+
 	a := ab[0]
-	b := ab[1]
+	b := strings.Join(ab[1:], " ")
 	n := len(a)
 	m := len(b)
+
+	if n == 0 {
+		alignmentA := make([]byte, m, m)
+
+		for i := range b {
+			alignmentA[i] = '_'
+		}
+
+		fmt.Printf("%s %s\n", string(alignmentA), b)
+
+		return
+	}
+
+	if m == 0 {
+		alignmentB := make([]byte, n, n)
+
+		for i := range a {
+			alignmentB[i] = '_'
+		}
+
+		fmt.Printf("%s %s\n", a, string(alignmentB))
+
+		return
+	}
+
 	f := make([][]int, n+1, n+1)
 
 	for i := range f {
@@ -53,16 +82,14 @@ func main() {
 
 	for ; i > 0 || j > 0; {
 		score := f[i][j]
-		scoreDiag := f[i - 1][j - 1]
-		scoreLeft := f[i - 1][j]
 
 		switch {
-		case score == scoreDiag + s(a[i-1], b[j-1]):
+		case i > 0 && j > 0 && score == f[i - 1][j - 1] + s(a[i-1], b[j-1]):
 			alignmentA = alignmentA + string([]byte{a[i-1]})
 			alignmentB = alignmentB + string([]byte{b[j-1]})
 			i--
 			j--
-		case score == scoreLeft - 1:
+		case i > 0 && score == f[i - 1][j] - 1:
 			alignmentA = alignmentA + string([]byte{a[i-1]})
 			alignmentB = alignmentB + "_"
 			i--
